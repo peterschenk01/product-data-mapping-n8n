@@ -121,21 +121,6 @@ You can:
 
 ---
 
-## Testing
-
-Currently, testing is manual:
-
-1. Start the stack using Docker Compose
-2. Open the web UI (`http://localhost:8000`)
-3. Upload sample files from `test-data/`, such as:
-
-   * `Beispielartikel.pdf`
-   * `Beispielartikel.xlsx`
-4. Submit files to the webhook
-5. Verify the generated Excel output
-
----
-
 ## Known Limitations
 
 ### General
