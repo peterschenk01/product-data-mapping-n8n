@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Upload</title>
+  <style>
+    :root {
+      font-family: Arial, sans-serif;
+      color-scheme: light;
+    }
+
+    body {
+      margin: 0;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 40px auto;
+      padding: 24px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #dbe3ef;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 28px;
+    }
+
+    p {
+      line-height: 1.5;
+    }
+
+    .field {
+      margin: 20px 0;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    input[type="file"] {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #fff;
+      box-sizing: border-box;
+    }
+
+    .hint {
+      font-size: 14px;
+      color: #475569;
+      margin-top: 8px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #2563eb;
+      color: #fff;
+    }
+
+    button.secondary {
+      background: #0f766e;
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .status {
+      margin-top: 20px;
+      padding: 14px 16px;
+      border-radius: 8px;
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      color: #312e81;
+      min-height: 24px;
+      white-space: pre-wrap;
+    }
+
+    .result {
+      margin-top: 24px;
+      padding: 18px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: #f8fafc;
+      display: none;
+    }
+
+    .result h2 {
+      margin-top: 0;
+      font-size: 20px;
+    }
+
+    .result-row {
+      margin-bottom: 10px;
+    }
+
+    .download-link {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: #111827;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .download-link:hover {
+      opacity: 0.92;
+    }
+
+    .error {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #991b1b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Upload a file to a webhook</h1>
+      <p>Select one file, then choose which webhook to send it to.</p>
+
+      <div class="field">
+        <label for="fileInput">File</label>
+        <input
+          id="fileInput"
+          type="file"
+          accept=".pdf,.xlsx,.xls,.csv,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
+        />
+        <div class="hint">Allowed types: .pdf, .xlsx, .xls, .csv</div>
+      </div>
+
+      <div class="actions">
+        <button id="testWebhookBtn" type="button">Upload to webhook-test</button>
+        <button id="prodWebhookBtn" type="button" class="secondary">Upload to webhook</button>
+      </div>
+
+      <div id="status" class="status">No upload started.</div>
+
+      <div id="result" class="result">
+        <h2>Webhook response file</h2>
+        <div class="result-row"><strong>Filename:</strong> <span id="resultFilename">-</span></div>
+        <div class="result-row"><strong>Type:</strong> <span id="resultType">-</span></div>
+        <a id="downloadLink" class="download-link" href="#" download>Download file</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const WEBHOOKS = {
+      test: 'http://localhost:5678/webhook-test/product-upload',
+      prod: 'http://localhost:5678/webhook/product-upload'
+    };
+
+    const ALLOWED_EXTENSIONS = ['pdf', 'xlsx', 'xls', 'csv'];
+
+    const fileInput = document.getElementById('fileInput');
+    const testWebhookBtn = document.getElementById('testWebhookBtn');
+    const prodWebhookBtn = document.getElementById('prodWebhookBtn');
+    const statusEl = document.getElementById('status');
+    const resultEl = document.getElementById('result');
+    const resultFilenameEl = document.getElementById('resultFilename');
+    const resultTypeEl = document.getElementById('resultType');
+    const downloadLink = document.getElementById('downloadLink');
+
+    let currentObjectUrl = null;
+
+    function setButtonsDisabled(disabled) {
+      testWebhookBtn.disabled = disabled;
+      prodWebhookBtn.disabled = disabled;
+      fileInput.disabled = disabled;
+    }
+
+    function setStatus(message, isError = false) {
+      statusEl.textContent = message;
+      statusEl.classList.toggle('error', isError);
+    }
+
+    function clearResult() {
+      resultEl.style.display = 'none';
+      resultFilenameEl.textContent = '-';
+      resultTypeEl.textContent = '-';
+      downloadLink.removeAttribute('href');
+      downloadLink.removeAttribute('download');
+
+      if (currentObjectUrl) {
+        URL.revokeObjectURL(currentObjectUrl);
+        currentObjectUrl = null;
+      }
+    }
+
+    function getExtension(filename) {
+      const parts = filename.split('.');
+      return parts.length > 1 ? parts.pop().toLowerCase() : '';
+    }
+
+    function isAllowedFile(file) {
+      if (!file) return false;
+      return ALLOWED_EXTENSIONS.includes(getExtension(file.name));
+    }
+
+    function extractFilename(contentDisposition) {
+      if (!contentDisposition) return 'response.xlsx';
+
+      const utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+      if (utf8Match && utf8Match[1]) {
+        return decodeURIComponent(utf8Match[1]);
+      }
+
+      const asciiMatch = contentDisposition.match(/filename="?([^";]+)"?/i);
+      if (asciiMatch && asciiMatch[1]) {
+        return asciiMatch[1];
+      }
+
+      return 'response.xlsx';
+    }
+
+    async function uploadToWebhook(url) {
+      clearResult();
+
+      const file = fileInput.files[0];
+      if (!file) {
+        setStatus('Please select one file before uploading.', true);
+        return;
+      }
+
+      if (!isAllowedFile(file)) {
+        setStatus('Invalid file type. Only .pdf, .xlsx, .xls, and .csv files are allowed.', true);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('data', file);
+
+      setButtonsDisabled(true);
+      setStatus(`Uploading "${file.name}" to ${url}\nWaiting for webhook response...`);
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text().catch(() => 'Unable to read error response.');
+          throw new Error(`Request failed with status ${response.status}. ${errorText}`);
+        }
+
+        const blob = await response.blob();
+        const responseType = blob.type || response.headers.get('content-type') || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        const responseFilename = extractFilename(response.headers.get('content-disposition'));
+
+        currentObjectUrl = URL.createObjectURL(blob);
+
+        resultFilenameEl.textContent = responseFilename;
+        resultTypeEl.textContent = responseType;
+        downloadLink.href = currentObjectUrl;
+        downloadLink.download = responseFilename;
+        resultEl.style.display = 'block';
+
+        setStatus('Webhook response received. Review the file details below, then click download when ready.');
+      } catch (error) {
+        setStatus(`Upload failed. ${error.message}`, true);
+      } finally {
+        setButtonsDisabled(false);
+      }
+    }
+
+    testWebhookBtn.addEventListener('click', () => uploadToWebhook(WEBHOOKS.test));
+    prodWebhookBtn.addEventListener('click', () => uploadToWebhook(WEBHOOKS.prod));
+
+    fileInput.addEventListener('change', () => {
+      clearResult();
+      const file = fileInput.files[0];
+
+      if (!file) {
+        setStatus('No upload started.');
+        return;
+      }
+
+      if (!isAllowedFile(file)) {
+        setStatus('Selected file is not allowed. Only .pdf, .xlsx, .xls, and .csv files are accepted.', true);
+        return;
+      }
+
+      setStatus(`Selected file: ${file.name}`);
+    });
+  </script>
+</body>
+</html>
