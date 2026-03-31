@@ -1,0 +1,808 @@
+{
+  "name": "product-data-mapping",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "product-upload",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -496,
+        672
+      ],
+      "id": "fd390f6a-3a65-476c-a554-b6de32e2ad89",
+      "name": "Webhook",
+      "webhookId": "6c7c6845-4239-4a1c-a8af-dedd71a2ff81"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$binary.data.fileExtension}}",
+                    "rightValue": "pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "39f56e87-abd4-4185-b7a2-0410f6eec050"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pdf"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "e66de6fb-266b-4dd6-8f1c-ca6d36e0d410",
+                    "leftValue": "={{$binary.data.fileExtension}}",
+                    "rightValue": "xlsx",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "xlsx"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "6ca90ea5-3032-42be-a469-dd2b88079151",
+                    "leftValue": "={{$binary.data.fileExtension}}",
+                    "rightValue": "xls",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "xls"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "cc863165-9bcf-4994-ab08-1b79dd6e5af7",
+                    "leftValue": "={{$binary.data.fileExtension}}",
+                    "rightValue": "csv",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "csv"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -272,
+        640
+      ],
+      "id": "d4d6fadf-c312-447a-a097-aea115530cad",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:5678/webhook-test/product-upload",
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -272,
+        0
+      ],
+      "id": "9c124005-ddf9-4d6d-8795-f73f1dfb809d",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -48,
+        480
+      ],
+      "id": "fc2620fc-1a2e-4f71-a4ab-fef20d3259da",
+      "name": "Extract from XLSX"
+    },
+    {
+      "parameters": {
+        "operation": "xls",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -48,
+        672
+      ],
+      "id": "3b83723d-b23f-4328-a35f-c242e1725b91",
+      "name": "Extract from XLS"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -48,
+        864
+      ],
+      "id": "0841d8b9-a484-46b3-bb9d-f98156326155",
+      "name": "Extract from CSV"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:3b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        480,
+        576
+      ],
+      "id": "0817d5c2-18ec-4ec6-a2d2-994bd4795d29",
+      "name": "Ollama Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "qdZSnYTIzcvoNFqA",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -48,
+        224
+      ],
+      "id": "3eeaf85c-7d3f-4f2f-b374-07174baaf250",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "fileName": "Artikelstammdaten",
+          "headerRow": true
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2464,
+        496
+      ],
+      "id": "9e6a4b07-c856-4cba-91c0-b100ace98a2e",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "respondWith": "binary",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2688,
+        496
+      ],
+      "id": "f6f15cb2-bbfb-4bd7-8a10-703ced9d492b",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "formTitle": "Produktdaten Upload",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Wählen Sie die Datei aus",
+              "fieldType": "file",
+              "fieldName": "data",
+              "acceptFileTypes": ".pdf, .xlsx, .xls, .csv",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -496,
+        0
+      ],
+      "id": "3111fe51-fcf0-4fdf-b230-81d907753fda",
+      "name": "Form for testing",
+      "webhookId": "6ef7b2f6-f517-4dc9-83f9-08944986ad20"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "={{ JSON.stringify($json.schema) }}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1648,
+        576
+      ],
+      "id": "bcee8a54-7231-4501-b2d5-d6e2adadb47c",
+      "name": "Structured Output Parser",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "703631e9-b424-40bd-8573-70128b629858",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2016,
+        352
+      ],
+      "id": "7eb5ee61-ad37-425f-8cad-ecda4283787e",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Error handling\n\nreturn {\n  \"error\": $json.error\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        304
+      ],
+      "id": "3bcb84bd-f333-4805-a3a4-227ce1714461",
+      "name": "Error Handling"
+    },
+    {
+      "parameters": {
+        "jsCode": "const merged = {};\n\nfor (const item of $input.all()) {\n  Object.assign(merged, item.json.output || {});\n}\n\nreturn [\n  {\n    json: { ...merged }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        496
+      ],
+      "id": "711ddb93-4f04-4f2f-a265-4944a146a800",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const product_data = {\n  \"product_data\": $json.text\n}\n\nreturn { json: product_data };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        224
+      ],
+      "id": "844b9e37-79ba-4644-9eb4-4fbec5602373",
+      "name": "Parse PDF"
+    },
+    {
+      "parameters": {
+        "jsCode": "const stringify = JSON.stringify($input.all())\n\nreturn {\n  product_data: stringify\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        672
+      ],
+      "id": "548573be-8a93-4fcd-909d-1de0535086d3",
+      "name": "Parse XLSX / XLS / CSV"
+    },
+    {
+      "parameters": {
+        "jsCode": "const n = 3;\n\nreturn $input.all().slice(0, n);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1424,
+        352
+      ],
+      "id": "15318615-1d9f-4e6c-b194-1d1f685b8bea",
+      "name": "Slice Batches for Testing",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const chunkSize = 20;\nconst inputItems = $input.all();\n\nconst output = [];\n\nfor (const item of inputItems) {\n  const sourceSchema = item.json.columns || {};\n  const productData = item.json.product_data;\n  const understanding = item.json.understanding;\n  const entries = Object.entries(sourceSchema);\n\n  for (let i = 0; i < entries.length; i += chunkSize) {\n    const chunk = entries.slice(i, i + chunkSize);\n\n    const properties = Object.fromEntries(chunk);\n    const required = chunk.map(([key]) => key);\n\n    output.push({\n      json: {\n        schema: {\n          type: \"object\",\n          properties,\n          // required,\n          // additionalProperties: false,\n        },\n        product_data: productData,\n        understanding: understanding,\n      },\n    });\n  }\n}\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        352
+      ],
+      "id": "fc79e9e7-ba78-46e1-9d7b-e6ea449c5a7e",
+      "name": "Batch Output Columns"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Du analysierst Produktdaten von Möbelherstellern.\n\nZiel:\nVerstehe die Struktur der gelieferten Daten und identifiziere alle enthaltenen Produktinformationen, ohne sie bereits in ein Zielsystem zu mappen.\n\nWichtige Regeln:\n\n- Verwende ausschließlich Informationen, die im Input enthalten sind.\n- Erfinde keine Daten.\n- Interpretiere Feldnamen semantisch (z. B. \"W/D/H\", \"BxTxH\", \"Dimensions\" → Maße).\n- Erkenne, ob Varianten vorhanden sind (z. B. gleiche Artikelnummer mit unterschiedlichen Farben/Größen).\n- Gruppiere Informationen logisch (z. B. Identität, Maße, Preise, Verpackung, Materialien, Medien).\n- Werte müssen möglichst originalgetreu übernommen werden.\n\nAufgabe:\n\nAnalysiere die Daten und liefere ein strukturiertes Verständnis.\n\nInput:\n{{ $json.product_data }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        400,
+        352
+      ],
+      "id": "6933eda8-0a28-401c-94e6-bfe62e5dfacb",
+      "name": "Source Understanding",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Du extrahierst strukturierte Informationen aus einem Möbelprodukt-Datenblatt.\n\nRegeln:\n\n- Verwende ausschließlich Informationen, die explizit im Input enthalten sind.\n- Erfinde keine Daten und ergänze nichts durch Annahmen oder externes Wissen.\n- Wenn ein Feld nicht eindeutig im Text vorkommt, setze den Wert auf \"\".\n- Übernehme Werte möglichst wortgetreu aus dem Input.\n- Bereinige Werte nur minimal (z. B. führende/trailing Leerzeichen entfernen).\n- Gib Maße, Materialien, Farben etc. exakt so an, wie sie im Text stehen.\n\nAusgabeformat:\n\n- Gib genau ein JSON-Objekt zurück.\n- Verwende exakt die Felder und Struktur, die vom Structured Output Parser vorgegeben sind.\n- Füge keine zusätzlichen Felder hinzu.\n- Jeder Wert muss ein String sein.\n- Keine Arrays, keine Objekte als Werte.\n- Keine Kommentare, keine Erklärungen, kein Markdown.\n\nOriginal Input (extrahiert von PDF/XLSX/XLS/CSV):\n{{ $json.product_data }}\n\nBeschreibung des Originalinputs eines LLMs für Kontext:\n{{ $json.understanding }}",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1664,
+        352
+      ],
+      "id": "b656cdac-1b9e-4ccd-87c3-c58cf5ad2c65",
+      "name": "Information Extraction",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const columns = {\n  \"EAN\": {\n    \"type\": \"string\"\n  },\n  \"MindBSMG\": {\n    \"type\": \"string\"\n  },\n  \"UVB\": {\n    \"type\": \"string\"\n  },\n  \"VKP1\": {\n    \"type\": \"string\"\n  },\n  \"Bild1\": {\n    \"type\": \"string\"\n  },\n  \"Bild2\": {\n    \"type\": \"string\"\n  },\n  \"Bild3\": {\n    \"type\": \"string\"\n  },\n  \"Bild4\": {\n    \"type\": \"string\"\n  },\n  \"Bild5\": {\n    \"type\": \"string\"\n  },\n  \"Hauptbild\": {\n    \"type\": \"string\"\n  },\n  \"ModBetLi\": {\n    \"type\": \"string\"\n  },\n  \"ArtBez\": {\n    \"type\": \"string\"\n  },\n  \"AusfText1\": {\n    \"type\": \"string\"\n  },\n  \"AusfText2\": {\n    \"type\": \"string\"\n  },\n  \"AusfText3\": {\n    \"type\": \"string\"\n  },\n  \"PreisKZ1\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Monate\": {\n    \"type\": \"string\"\n  },\n  \"Garantiegeber\": {\n    \"type\": \"string\"\n  },\n  \"Entsorgungslizenznummer\": {\n    \"type\": \"string\"\n  },\n  \"ModellFamilie\": {\n    \"type\": \"string\"\n  },\n  \"zusätzl. EAN (VKE)\": {\n    \"type\": \"string\"\n  },\n  \"24h-Versand/Express\": {\n    \"type\": \"string\"\n  },\n  \"Anlieferort\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Packstücke (Kollis)\": {\n    \"type\": \"string\"\n  },\n  \"Bestellbar bis\": {\n    \"type\": \"string\"\n  },\n  \"Bestellmenge Container 20\": {\n    \"type\": \"string\"\n  },\n  \"Bestellmenge Container 40\": {\n    \"type\": \"string\"\n  },\n  \"Bestellmenge Container 40HC\": {\n    \"type\": \"string\"\n  },\n  \"Bestellmenge LKW\": {\n    \"type\": \"string\"\n  },\n  \"Bruchgefahr\": {\n    \"type\": \"string\"\n  },\n  \"Code Eco Mobelier\": {\n    \"type\": \"string\"\n  },\n  \"Direktversand Endkunde möglich\": {\n    \"type\": \"string\"\n  },\n  \"Höchstbestellmenge\": {\n    \"type\": \"string\"\n  },\n  \"ILN / GLN Nummer Hersteller\": {\n    \"type\": \"string\"\n  },\n  \"Innerbox Gesamt-Volumen\": {\n    \"type\": \"string\"\n  },\n  \"Intrastat-Warennummer\": {\n    \"type\": \"string\"\n  },\n  \"Lagenfaktor\": {\n    \"type\": \"string\"\n  },\n  \"Lagerobjektfaktor\": {\n    \"type\": \"string\"\n  },\n  \"Liefereinheit\": {\n    \"type\": \"string\"\n  },\n  \"Lieferzeit Direktanlieferung Kunde (in AT)\": {\n    \"type\": \"string\"\n  },\n  \"Lieferzeit gültig ab\": {\n    \"type\": \"string\"\n  },\n  \"Lieferzeit Lager in AT\": {\n    \"type\": \"string\"\n  },\n  \"Lieferzustand\": {\n    \"type\": \"string\"\n  },\n  \"Mindestbestellmenge\": {\n    \"type\": \"string\"\n  },\n  \"Mindestbestellwert\": {\n    \"type\": \"string\"\n  },\n  \"Packstücke Gesamt-Gewicht\": {\n    \"type\": \"string\"\n  },\n  \"Packstücke Gesamt-Volumen\": {\n    \"type\": \"string\"\n  },\n  \"Palettenmenge\": {\n    \"type\": \"string\"\n  },\n  \"Planaufstellzeit (in Zeitminuten)\": {\n    \"type\": \"string\"\n  },\n  \"Selbstaufbau möglich\": {\n    \"type\": \"string\"\n  },\n  \"Transportverpackung Gesamt-Gewicht\": {\n    \"type\": \"string\"\n  },\n  \"Transportverpackung Gesamt-Volumen\": {\n    \"type\": \"string\"\n  },\n  \"Verbindliche Zolltarifauskunft\": {\n    \"type\": \"string\"\n  },\n  \"Verkaufsverpackung Gesamt-Gewicht\": {\n    \"type\": \"string\"\n  },\n  \"Verkaufsverpackung Gesamt-Volumen\": {\n    \"type\": \"string\"\n  },\n  \"Verpackungseinheit\": {\n    \"type\": \"string\"\n  },\n  \"Versandart Endkunde\": {\n    \"type\": \"string\"\n  },\n  \"Zolltarifnummer\": {\n    \"type\": \"string\"\n  },\n  \"Breite\": {\n    \"type\": \"string\"\n  },\n  \"Gewicht\": {\n    \"type\": \"string\"\n  },\n  \"Länge\": {\n    \"type\": \"string\"\n  },\n  \"Tiefe\": {\n    \"type\": \"string\"\n  },\n  \"Volumen\": {\n    \"type\": \"string\"\n  },\n  \"BasisPreis\": {\n    \"type\": \"string\"\n  },\n  \"Abholpreis\": {\n    \"type\": \"string\"\n  },\n  \"Auszeichnungspreis\": {\n    \"type\": \"string\"\n  },\n  \"EK\": {\n    \"type\": \"string\"\n  },\n  \"Listenpreis Lieferant\": {\n    \"type\": \"string\"\n  },\n  \"Verkaufspreis\": {\n    \"type\": \"string\"\n  },\n  \"Werbepreis\": {\n    \"type\": \"string\"\n  },\n  \"Artikelart\": {\n    \"type\": \"string\"\n  },\n  \"Farbe\": {\n    \"type\": \"string\"\n  },\n  \"Material\": {\n    \"type\": \"string\"\n  },\n  \"Hersteller\": {\n    \"type\": \"string\"\n  },\n  \"Herstellerland\": {\n    \"type\": \"string\"\n  },\n  \"Kategorie\": {\n    \"type\": \"string\"\n  },\n  \"SEO Keywords\": {\n    \"type\": \"string\"\n  },\n  \"SEO Text/Beschreibungtext (lang)\": {\n    \"type\": \"string\"\n  },\n  \"AT Pfand\": {\n    \"type\": \"string\"\n  },\n  \"Mindestalter Versand\": {\n    \"type\": \"string\"\n  },\n  \"Mindestalter Verkauf\": {\n    \"type\": \"string\"\n  },\n  \"Mindestalter Verkauf in Österreich\": {\n    \"type\": \"string\"\n  },\n  \"Mindestalter Verkauf in Deutschland\": {\n    \"type\": \"string\"\n  },\n  \"AT Pfand pro Gebinde\": {\n    \"type\": \"string\"\n  },\n  \"Text für Datencheck\": {\n    \"type\": \"string\"\n  },\n  \"Pfandhinweis\": {\n    \"type\": \"string\"\n  },\n  \"Menge im Gebinde (Stück)\": {\n    \"type\": \"string\"\n  },\n  \"Bild6\": {\n    \"type\": \"string\"\n  },\n  \"Bild7\": {\n    \"type\": \"string\"\n  },\n  \"Bild8\": {\n    \"type\": \"string\"\n  },\n  \"Bild9\": {\n    \"type\": \"string\"\n  },\n  \"Bild10\": {\n    \"type\": \"string\"\n  },\n  \"Bild11\": {\n    \"type\": \"string\"\n  },\n  \"Bild12\": {\n    \"type\": \"string\"\n  },\n  \"Bild13\": {\n    \"type\": \"string\"\n  },\n  \"Bild14\": {\n    \"type\": \"string\"\n  },\n  \"Bild15\": {\n    \"type\": \"string\"\n  },\n  \"Sicherheitshinweis\": {\n    \"type\": \"string\"\n  },\n  \"Farbgruppe\": {\n    \"type\": \"string\"\n  },\n  \"Breite Sitzfläche\": {\n    \"type\": \"string\"\n  },\n  \"Länge Sitzfläche\": {\n    \"type\": \"string\"\n  },\n  \"Tiefe Sitzfläche\": {\n    \"type\": \"string\"\n  },\n  \"Sitzhöhe\": {\n    \"type\": \"string\"\n  },\n  \"Sitzhöhe max\": {\n    \"type\": \"string\"\n  },\n  \"Sitzhöhe min\": {\n    \"type\": \"string\"\n  },\n  \"Breite Verpackung 1\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Verpackung 1\": {\n    \"type\": \"string\"\n  },\n  \"Länge Verpackung 1\": {\n    \"type\": \"string\"\n  },\n  \"Gewicht Verpackung 1\": {\n    \"type\": \"string\"\n  },\n  \"Volumen Verpackung 1\": {\n    \"type\": \"string\"\n  },\n  \"Breite Verpackung 2\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Verpackung 2\": {\n    \"type\": \"string\"\n  },\n  \"Länge Verpackung 2\": {\n    \"type\": \"string\"\n  },\n  \"Gewicht Verpackung 2\": {\n    \"type\": \"string\"\n  },\n  \"Volumen Verpackung 2\": {\n    \"type\": \"string\"\n  },\n  \"Breite Verpackung 3\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Verpackung 3\": {\n    \"type\": \"string\"\n  },\n  \"Länge Verpackung 3\": {\n    \"type\": \"string\"\n  },\n  \"Gewicht Verpackung 3\": {\n    \"type\": \"string\"\n  },\n  \"Volumen Verpackung 3\": {\n    \"type\": \"string\"\n  },\n  \"Montage notwendig\": {\n    \"type\": \"string\"\n  },\n  \"Bewässerungssystem\": {\n    \"type\": \"string\"\n  },\n  \"Lichtquelle im Lieferumfang\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Flammen\": {\n    \"type\": \"string\"\n  },\n  \"Bewegungsmelder\": {\n    \"type\": \"string\"\n  },\n  \"Dimmbarkeit\": {\n    \"type\": \"string\"\n  },\n  \"Drehbar\": {\n    \"type\": \"string\"\n  },\n  \"Energieeffizienzklasse\": {\n    \"type\": \"string\"\n  },\n  \"Fassung\": {\n    \"type\": \"string\"\n  },\n  \"Fernbedienung\": {\n    \"type\": \"string\"\n  },\n  \"Frequenz\": {\n    \"type\": \"string\"\n  },\n  \"Geeignet für Leuchtmittel der Energieeffizienzklassen\": {\n    \"type\": \"string\"\n  },\n  \"geeignet für Smart Home\": {\n    \"type\": \"string\"\n  },\n  \"Kabellänge (cm)\": {\n    \"type\": \"string\"\n  },\n  \"Leistung\": {\n    \"type\": \"string\"\n  },\n  \"Leuchtmittel austauschbar\": {\n    \"type\": \"string\"\n  },\n  \"Leuchtmittel inklusive\": {\n    \"type\": \"string\"\n  },\n  \"Lichtfarbe\": {\n    \"type\": \"string\"\n  },\n  \"Lichtleistung\": {\n    \"type\": \"string\"\n  },\n  \"max. Leuchtdauer\": {\n    \"type\": \"string\"\n  },\n  \"Nennspannung\": {\n    \"type\": \"string\"\n  },\n  \"Schalter\": {\n    \"type\": \"string\"\n  },\n  \"Schutzart\": {\n    \"type\": \"string\"\n  },\n  \"Schutzklasse\": {\n    \"type\": \"string\"\n  },\n  \"Solar\": {\n    \"type\": \"string\"\n  },\n  \"Spannung\": {\n    \"type\": \"string\"\n  },\n  \"Stromversorgung\": {\n    \"type\": \"string\"\n  },\n  \"IP-Schutzklasse\": {\n    \"type\": \"string\"\n  },\n  \"Akkukapazität\": {\n    \"type\": \"string\"\n  },\n  \"max. Betriebsdauer\": {\n    \"type\": \"string\"\n  },\n  \"Akkuspannung\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Akkus\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Leuchtmittel\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Lüfterblätter\": {\n    \"type\": \"string\"\n  },\n  \"Höhe\": {\n    \"type\": \"string\"\n  },\n  \"Schirmhöhe\": {\n    \"type\": \"string\"\n  },\n  \"Durchmesser\": {\n    \"type\": \"string\"\n  },\n  \"Durchmesser Schirm\": {\n    \"type\": \"string\"\n  },\n  \"Durchmesser Standfuß\": {\n    \"type\": \"string\"\n  },\n  \"Gestell\": {\n    \"type\": \"string\"\n  },\n  \"Leuchtmitteltyp\": {\n    \"type\": \"string\"\n  },\n  \"Massivholz\": {\n    \"type\": \"string\"\n  },\n  \"Massivholzanteil\": {\n    \"type\": \"string\"\n  },\n  \"Raum\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl offene Fächer\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Schubladen\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Türen\": {\n    \"type\": \"string\"\n  },\n  \"Ausstattung / Funktion\": {\n    \"type\": \"string\"\n  },\n  \"Ausstattungsdetails\": {\n    \"type\": \"string\"\n  },\n  \"Beleuchtet\": {\n    \"type\": \"string\"\n  },\n  \"Belastbarkeit max.\": {\n    \"type\": \"string\"\n  },\n  \"Beschläge\": {\n    \"type\": \"string\"\n  },\n  \"Eigenschaften\": {\n    \"type\": \"string\"\n  },\n  \"Front\": {\n    \"type\": \"string\"\n  },\n  \"Hinweise\": {\n    \"type\": \"string\"\n  },\n  \"Korpus\": {\n    \"type\": \"string\"\n  },\n  \"Marke\": {\n    \"type\": \"string\"\n  },\n  \"Nachbildung\": {\n    \"type\": \"string\"\n  },\n  \"Oberfläche\": {\n    \"type\": \"string\"\n  },\n  \"Rückwand\": {\n    \"type\": \"string\"\n  },\n  \"Schubkasten\": {\n    \"type\": \"string\"\n  },\n  \"Sockelhöhe\": {\n    \"type\": \"string\"\n  },\n  \"Stärke Einlegeboden\": {\n    \"type\": \"string\"\n  },\n  \"Stärke Korpus\": {\n    \"type\": \"string\"\n  },\n  \"Stärke Oberboden\": {\n    \"type\": \"string\"\n  },\n  \"Stärke Rückwand\": {\n    \"type\": \"string\"\n  },\n  \"Stärke Schubkastenboden\": {\n    \"type\": \"string\"\n  },\n  \"Stärke Schubkastenfront\": {\n    \"type\": \"string\"\n  },\n  \"Stärke Seitenwand\": {\n    \"type\": \"string\"\n  },\n  \"Türanschlag\": {\n    \"type\": \"string\"\n  },\n  \"Art Einlegeböden\": {\n    \"type\": \"string\"\n  },\n  \"max. Belastbarkeit Einlegeboden\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Einlegeböden gesamt\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Füße\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Griffe\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Kleiderstangen\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Beine\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Fachböden\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Schubkästen groß\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Schubkästen klein\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Spiegel\": {\n    \"type\": \"string\"\n  },\n  \"Art Füße\": {\n    \"type\": \"string\"\n  },\n  \"Art Griffe\": {\n    \"type\": \"string\"\n  },\n  \"Art Oberflächenbehandlung\": {\n    \"type\": \"string\"\n  },\n  \"Art Spiegel\": {\n    \"type\": \"string\"\n  },\n  \"Ausführung\": {\n    \"type\": \"string\"\n  },\n  \"Breite Einlegeböden\": {\n    \"type\": \"string\"\n  },\n  \"Breite Fachinnenmaß\": {\n    \"type\": \"string\"\n  },\n  \"Breite Füße\": {\n    \"type\": \"string\"\n  },\n  \"Breite Griffe\": {\n    \"type\": \"string\"\n  },\n  \"Breite Schubladeninnenmaß\": {\n    \"type\": \"string\"\n  },\n  \"Breite Spiegel\": {\n    \"type\": \"string\"\n  },\n  \"Breite Tischplatte\": {\n    \"type\": \"string\"\n  },\n  \"Ergänzende Maßangaben\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Füße\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Griffe\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Innendekor\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Korpus\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Schubladen\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Tischplatte\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Türen\": {\n    \"type\": \"string\"\n  },\n  \"Holzart\": {\n    \"type\": \"string\"\n  },\n  \"Holzart (botanisch)\": {\n    \"type\": \"string\"\n  },\n  \"Holzart Füße\": {\n    \"type\": \"string\"\n  },\n  \"Holzart Griffe\": {\n    \"type\": \"string\"\n  },\n  \"Holzart Tischplatte\": {\n    \"type\": \"string\"\n  },\n  \"Holzart Korpus\": {\n    \"type\": \"string\"\n  },\n  \"Holzart Türen\": {\n    \"type\": \"string\"\n  },\n  \"Innenmaß Breite Fach\": {\n    \"type\": \"string\"\n  },\n  \"Innenmaß Höhe Fach\": {\n    \"type\": \"string\"\n  },\n  \"Innenmaß Tiefe Fach\": {\n    \"type\": \"string\"\n  },\n  \"Innenmaß Breite Schubfach\": {\n    \"type\": \"string\"\n  },\n  \"Innenmaß Höhe Schubfach\": {\n    \"type\": \"string\"\n  },\n  \"Innenmaß Tiefe Schubfach\": {\n    \"type\": \"string\"\n  },\n  \"Länge Füße\": {\n    \"type\": \"string\"\n  },\n  \"Material Auszüge\": {\n    \"type\": \"string\"\n  },\n  \"Material Beschläge\": {\n    \"type\": \"string\"\n  },\n  \"Material Füße\": {\n    \"type\": \"string\"\n  },\n  \"Material Griffe\": {\n    \"type\": \"string\"\n  },\n  \"Material Korpus\": {\n    \"type\": \"string\"\n  },\n  \"Material Oberboden\": {\n    \"type\": \"string\"\n  },\n  \"Material Rückwand\": {\n    \"type\": \"string\"\n  },\n  \"Material Scharniere\": {\n    \"type\": \"string\"\n  },\n  \"Material Schublade\": {\n    \"type\": \"string\"\n  },\n  \"Material Schubladenauszug\": {\n    \"type\": \"string\"\n  },\n  \"Material Tischplatte\": {\n    \"type\": \"string\"\n  },\n  \"Material Türen\": {\n    \"type\": \"string\"\n  },\n  \"Modell\": {\n    \"type\": \"string\"\n  },\n  \"Oberflächenbehandlung Füße\": {\n    \"type\": \"string\"\n  },\n  \"Oberflächenbehandlung Korpus\": {\n    \"type\": \"string\"\n  },\n  \"Oberflächenbehandlung Tischplatte\": {\n    \"type\": \"string\"\n  },\n  \"Pflegehinweise\": {\n    \"type\": \"string\"\n  },\n  \"Serie\": {\n    \"type\": \"string\"\n  },\n  \"Stärke Tischplatte\": {\n    \"type\": \"string\"\n  },\n  \"Tiefe Einlegeböden\": {\n    \"type\": \"string\"\n  },\n  \"Tiefe Füße\": {\n    \"type\": \"string\"\n  },\n  \"Tiefe Griffe\": {\n    \"type\": \"string\"\n  },\n  \"Tiefe Spiegel\": {\n    \"type\": \"string\"\n  },\n  \"Tiefe Tischplatte\": {\n    \"type\": \"string\"\n  },\n  \"Wissenswertes\": {\n    \"type\": \"string\"\n  },\n  \"Beleuchtung\": {\n    \"type\": \"string\"\n  },\n  \"Einlegeböden\": {\n    \"type\": \"string\"\n  },\n  \"Türen\": {\n    \"type\": \"string\"\n  },\n  \"Stromversorgung Art\": {\n    \"type\": \"string\"\n  },\n  \"Tischplattenstärke\": {\n    \"type\": \"string\"\n  },\n  \"Durchmesser Tischplatte\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Füße\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Fachinnenmaß\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Griffe\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Schubladeninnenmaß\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Tischunterkante\": {\n    \"type\": \"string\"\n  },\n  \"Holzart / Dekor\": {\n    \"type\": \"string\"\n  },\n  \"Höhe maximal\": {\n    \"type\": \"string\"\n  },\n  \"Höhenverstellbar\": {\n    \"type\": \"string\"\n  },\n  \"Hinweis Lieferumfang\": {\n    \"type\": \"string\"\n  },\n  \"Länge maximal\": {\n    \"type\": \"string\"\n  },\n  \"Länge minimal\": {\n    \"type\": \"string\"\n  },\n  \"Material Gestell\": {\n    \"type\": \"string\"\n  },\n  \"Materialzusammensetzung\": {\n    \"type\": \"string\"\n  },\n  \"Verstellbarkeit Höhe\": {\n    \"type\": \"string\"\n  },\n  \"Wohnstil\": {\n    \"type\": \"string\"\n  },\n  \"Ablageboden\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Sitzplätze\": {\n    \"type\": \"string\"\n  },\n  \"Art Erweiterungselemente\": {\n    \"type\": \"string\"\n  },\n  \"Art Gestell\": {\n    \"type\": \"string\"\n  },\n  \"Art Tischplatte\": {\n    \"type\": \"string\"\n  },\n  \"Ausrichtung\": {\n    \"type\": \"string\"\n  },\n  \"Breite maximal\": {\n    \"type\": \"string\"\n  },\n  \"Breite minimal\": {\n    \"type\": \"string\"\n  },\n  \"Breite ausgezogen\": {\n    \"type\": \"string\"\n  },\n  \"Länge ausgezogen\": {\n    \"type\": \"string\"\n  },\n  \"Ausziehbar\": {\n    \"type\": \"string\"\n  },\n  \"Form\": {\n    \"type\": \"string\"\n  },\n  \"Gewicht Gestell\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Gestell\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Gestell\": {\n    \"type\": \"string\"\n  },\n  \"Material Ablageboden\": {\n    \"type\": \"string\"\n  },\n  \"Material Bodenplatte\": {\n    \"type\": \"string\"\n  },\n  \"Material Gestell\": {\n    \"type\": \"string\"\n  },\n  \"Material Verbindungsplatte\": {\n    \"type\": \"string\"\n  },\n  \"Material Tischplattenverbindung\": {\n    \"type\": \"string\"\n  },\n  \"Oberflächenbehandlung Gestell\": {\n    \"type\": \"string\"\n  },\n  \"Art Bodenbelagrolle\": {\n    \"type\": \"string\"\n  },\n  \"Art Verstellfunktion\": {\n    \"type\": \"string\"\n  },\n  \"Ausstattung Rollen\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Rollen\": {\n    \"type\": \"string\"\n  },\n  \"Ausstattung Armlehnen\": {\n    \"type\": \"string\"\n  },\n  \"Ausstattung Rückenlehne\": {\n    \"type\": \"string\"\n  },\n  \"Ausstattung Sitzfläche\": {\n    \"type\": \"string\"\n  },\n  \"Belastbarkeit Rollen\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Armlehnen\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Fußkreuz\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Rückenlehne\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Sitzfläche\": {\n    \"type\": \"string\"\n  },\n  \"Material Armlehnen\": {\n    \"type\": \"string\"\n  },\n  \"Material Fußkreuz\": {\n    \"type\": \"string\"\n  },\n  \"Material Rollen\": {\n    \"type\": \"string\"\n  },\n  \"Material Rückenlehne\": {\n    \"type\": \"string\"\n  },\n  \"Material Sitzfläche\": {\n    \"type\": \"string\"\n  },\n  \"max. Belastbarkeit\": {\n    \"type\": \"string\"\n  },\n  \"Max. Belastbarkeit\": {\n    \"type\": \"string\"\n  },\n  \"Tiefe Sitzfläche maximal\": {\n    \"type\": \"string\"\n  },\n  \"Tiefe Sitzfläche minimal\": {\n    \"type\": \"string\"\n  },\n  \"Tiefe Armlehnen\": {\n    \"type\": \"string\"\n  },\n  \"Breite Armlehnen\": {\n    \"type\": \"string\"\n  },\n  \"Armlehnenhöhe\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Rückenlehne\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Sitzfläche\": {\n    \"type\": \"string\"\n  },\n  \"Höhe maximal Rückenlehne\": {\n    \"type\": \"string\"\n  },\n  \"Höhe minimal Rückenlehne\": {\n    \"type\": \"string\"\n  },\n  \"Tiefe Fußkreuz\": {\n    \"type\": \"string\"\n  },\n  \"Breite Fußkreuz\": {\n    \"type\": \"string\"\n  },\n  \"Breite Rückenlehne\": {\n    \"type\": \"string\"\n  },\n  \"Breite Sitzfläche maximal\": {\n    \"type\": \"string\"\n  },\n  \"Breite Sitzfläche minimal\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Armlehnen\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Beine\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Rückenlehnen\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Sitzflächen\": {\n    \"type\": \"string\"\n  },\n  \"Art Füße / Gestell\": {\n    \"type\": \"string\"\n  },\n  \"Art Polsterung\": {\n    \"type\": \"string\"\n  },\n  \"Art Stauraum\": {\n    \"type\": \"string\"\n  },\n  \"Ausführung Rückenlehne\": {\n    \"type\": \"string\"\n  },\n  \"Ausführung Sitzfläche\": {\n    \"type\": \"string\"\n  },\n  \"Breite Rückenlehne\": {\n    \"type\": \"string\"\n  },\n  \"Breite Sitzfläche\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Füße / Gestell\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Rückenlehne\": {\n    \"type\": \"string\"\n  },\n  \"Material Füße / Gestell\": {\n    \"type\": \"string\"\n  },\n  \"Material Untergestell\": {\n    \"type\": \"string\"\n  },\n  \"Tiefe Sitztiefe\": {\n    \"type\": \"string\"\n  },\n  \"Pillingbildung Bezug\": {\n    \"type\": \"string\"\n  },\n  \"Scheuerbeständigkeit Bezug\": {\n    \"type\": \"string\"\n  },\n  \"Ausführung Armlehnen\": {\n    \"type\": \"string\"\n  },\n  \"Bodenfreiheit\": {\n    \"type\": \"string\"\n  },\n  \"Bodenfreiheit maximal\": {\n    \"type\": \"string\"\n  },\n  \"Bodenfreiheit minimal\": {\n    \"type\": \"string\"\n  },\n  \"Ergonomische Funktionen\": {\n    \"type\": \"string\"\n  },\n  \"Hinweis Maßangaben\": {\n    \"type\": \"string\"\n  },\n  \"justierbar\": {\n    \"type\": \"string\"\n  },\n  \"Neigungsverstellung Rückenlehne\": {\n    \"type\": \"string\"\n  },\n  \"Tiefenverstellung Sitzfläche\": {\n    \"type\": \"string\"\n  },\n  \"Art Rollen\": {\n    \"type\": \"string\"\n  },\n  \"Art Rückenkissen\": {\n    \"type\": \"string\"\n  },\n  \"Art Sitzkissen\": {\n    \"type\": \"string\"\n  },\n  \"Belastbarkeit pro Sitzplatz\": {\n    \"type\": \"string\"\n  },\n  \"Biesenoptik\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Rückenlehne innen\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Rückenlehne außen\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Sitzfläche / Rückenlehne\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Ziernähte\": {\n    \"type\": \"string\"\n  },\n  \"Funktionen Armlehnen\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Füße\": {\n    \"type\": \"string\"\n  },\n  \"Material Untergestell\": {\n    \"type\": \"string\"\n  },\n  \"Ziernaht\": {\n    \"type\": \"string\"\n  },\n  \"Wissenswertes Bettkasten\": {\n    \"type\": \"string\"\n  },\n  \"Wissenswertes Rückenkissen\": {\n    \"type\": \"string\"\n  },\n  \"Wissenswertes Sitzkissen\": {\n    \"type\": \"string\"\n  },\n  \"Verstellbarkeit Rückenlehne\": {\n    \"type\": \"string\"\n  },\n  \"Sitztiefe\": {\n    \"type\": \"string\"\n  },\n  \"Art Matratze\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Bettkästen\": {\n    \"type\": \"string\"\n  },\n  \"Matratzenzonen\": {\n    \"type\": \"string\"\n  },\n  \"Matratzenhärtegrad\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Federn Matratze\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Liegezonen Matratze\": {\n    \"type\": \"string\"\n  },\n  \"Art Füße Bett\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Matratzen\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Teile\": {\n    \"type\": \"string\"\n  },\n  \"Ausstattung Matratze\": {\n    \"type\": \"string\"\n  },\n  \"Art Matratzenkern\": {\n    \"type\": \"string\"\n  },\n  \"Art Topper\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Federn pro m²\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Liegeflächen\": {\n    \"type\": \"string\"\n  },\n  \"Breite Liegefläche\": {\n    \"type\": \"string\"\n  },\n  \"Länge Liegefläche\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Liegefläche\": {\n    \"type\": \"string\"\n  },\n  \"Material Topperbezug\": {\n    \"type\": \"string\"\n  },\n  \"Material Matratzenbezug\": {\n    \"type\": \"string\"\n  },\n  \"Pflegehinweise Bezug\": {\n    \"type\": \"string\"\n  },\n  \"Matratze 1\": {\n    \"type\": \"string\"\n  },\n  \"Matratze 2\": {\n    \"type\": \"string\"\n  },\n  \"Topper\": {\n    \"type\": \"string\"\n  },\n  \"Bettkasten\": {\n    \"type\": \"string\"\n  },\n  \"Art Stauraum 2\": {\n    \"type\": \"string\"\n  },\n  \"Ausführung Bettkasten\": {\n    \"type\": \"string\"\n  },\n  \"Ausstattung Bett\": {\n    \"type\": \"string\"\n  },\n  \"Bettkastenmaß Breite\": {\n    \"type\": \"string\"\n  },\n  \"Bettkastenmaß Höhe\": {\n    \"type\": \"string\"\n  },\n  \"Bettkastenmaß Tiefe\": {\n    \"type\": \"string\"\n  },\n  \"Bezug\": {\n    \"type\": \"string\"\n  },\n  \"Breite Bettgestell\": {\n    \"type\": \"string\"\n  },\n  \"Breite Kopfteil\": {\n    \"type\": \"string\"\n  },\n  \"Breite Liegefläche minimal\": {\n    \"type\": \"string\"\n  },\n  \"Breite Liegefläche maximal\": {\n    \"type\": \"string\"\n  },\n  \"Breite Matratze\": {\n    \"type\": \"string\"\n  },\n  \"Details Kopfteil\": {\n    \"type\": \"string\"\n  },\n  \"Federung Matratze\": {\n    \"type\": \"string\"\n  },\n  \"Füße\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Bettseite\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Kopfteil\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Matratze\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Topper\": {\n    \"type\": \"string\"\n  },\n  \"Länge Bettgestell\": {\n    \"type\": \"string\"\n  },\n  \"Länge Kopfteil\": {\n    \"type\": \"string\"\n  },\n  \"Länge Liegefläche minimal\": {\n    \"type\": \"string\"\n  },\n  \"Länge Liegefläche maximal\": {\n    \"type\": \"string\"\n  },\n  \"Länge Matratze\": {\n    \"type\": \"string\"\n  },\n  \"Material Bezug\": {\n    \"type\": \"string\"\n  },\n  \"Material Füße\": {\n    \"type\": \"string\"\n  },\n  \"Material Kopfteil\": {\n    \"type\": \"string\"\n  },\n  \"Modellhinweis\": {\n    \"type\": \"string\"\n  },\n  \"Hinweis Belastbarkeit\": {\n    \"type\": \"string\"\n  },\n  \"Pflegehinweise Bezug Matratze\": {\n    \"type\": \"string\"\n  },\n  \"Topperkern\": {\n    \"type\": \"string\"\n  },\n  \"Liegefläche\": {\n    \"type\": \"string\"\n  },\n  \"Bettzubehör\": {\n    \"type\": \"string\"\n  },\n  \"Max. Höhe Topper\": {\n    \"type\": \"string\"\n  },\n  \"Möbel-Label\": {\n    \"type\": \"string\"\n  },\n  \"Prüfnummer\": {\n    \"type\": \"string\"\n  },\n  \"Mitnehmer/Zwangsmitnehmer\": {\n    \"type\": \"string\"\n  },\n  \"ausziehbar\": {\n    \"type\": \"string\"\n  },\n  \"Möbel-Label Modellnummer\": {\n    \"type\": \"string\"\n  },\n  \"Möbel-Label-EPREL Registrierungspflicht\": {\n    \"type\": \"string\"\n  },\n  \"Möbel-Label Verlinkung Datenblatt\": {\n    \"type\": \"string\"\n  },\n  \"Möbel-Label Nummer\": {\n    \"type\": \"string\"\n  },\n  \"Möbel-Label Text\": {\n    \"type\": \"string\"\n  },\n  \"Möbel-Label Bild\": {\n    \"type\": \"string\"\n  },\n  \"Kabeldurchlass\": {\n    \"type\": \"string\"\n  },\n  \"Standfunktion\": {\n    \"type\": \"string\"\n  },\n  \"UVP\": {\n    \"type\": \"string\"\n  },\n  \"Stühle\": {\n    \"type\": \"string\"\n  },\n  \"Gewicht Stuhl\": {\n    \"type\": \"string\"\n  },\n  \"Typenbezeichnung\": {\n    \"type\": \"string\"\n  },\n  \"Herkunftsland Holz\": {\n    \"type\": \"string\"\n  },\n  \"Stapelbar\": {\n    \"type\": \"string\"\n  },\n  \"Art Verstellbarkeit\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Rückenpolster\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Schlaffunktionen\": {\n    \"type\": \"string\"\n  },\n  \"Art Polsterung Gestell\": {\n    \"type\": \"string\"\n  },\n  \"Breite Rückenpolster\": {\n    \"type\": \"string\"\n  },\n  \"Breite Schlaffunktion\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Rückenpolster\": {\n    \"type\": \"string\"\n  },\n  \"Länge Schlaffunktion\": {\n    \"type\": \"string\"\n  },\n  \"Stärke Rückenpolster\": {\n    \"type\": \"string\"\n  },\n  \"Stärke Sitzpolster\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Sitzpolster\": {\n    \"type\": \"string\"\n  },\n  \"Art Sitzpolster\": {\n    \"type\": \"string\"\n  },\n  \"Breite Sitzpolster\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Sitzpolster\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Armlehnen\": {\n    \"type\": \"string\"\n  },\n  \"Art Auszug\": {\n    \"type\": \"string\"\n  },\n  \"Breite zwischen Füßen\": {\n    \"type\": \"string\"\n  },\n  \"Durchmesser Füße\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Absetzung\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Auflage\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Matratze\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Topper\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Füße / Gestell\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Sitzkissen\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Rückenkissen\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Seitenteil\": {\n    \"type\": \"string\"\n  },\n  \"Matratzenhöhe\": {\n    \"type\": \"string\"\n  },\n  \"Möbeloberfläche\": {\n    \"type\": \"string\"\n  },\n  \"Sitztiefe minimal\": {\n    \"type\": \"string\"\n  },\n  \"Sitztiefe maximal\": {\n    \"type\": \"string\"\n  },\n  \"Art Fächer\": {\n    \"type\": \"string\"\n  },\n  \"Art Matratze 2\": {\n    \"type\": \"string\"\n  },\n  \"Art Matratze 3\": {\n    \"type\": \"string\"\n  },\n  \"Art Matratze 4\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Matratzen 2\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Matratzen 3\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Matratzen 4\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Auflagen\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Fächer\": {\n    \"type\": \"string\"\n  },\n  \"Lieferumfang\": {\n    \"type\": \"string\"\n  },\n  \"Hinweis Lieferzustand\": {\n    \"type\": \"string\"\n  },\n  \"Weinflaschenhalterung\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Bretter\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Kleinteile\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Bretter\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Kleinteile\": {\n    \"type\": \"string\"\n  },\n  \"Material Bretter\": {\n    \"type\": \"string\"\n  },\n  \"Material Kleinteile\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Haken\": {\n    \"type\": \"string\"\n  },\n  \"Art Montage\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Haken\": {\n    \"type\": \"string\"\n  },\n  \"Material Haken\": {\n    \"type\": \"string\"\n  },\n  \"Aufbauhinweise\": {\n    \"type\": \"string\"\n  },\n  \"Schubladeninnenmaße Breite\": {\n    \"type\": \"string\"\n  },\n  \"Schubladeninnenmaße Höhe\": {\n    \"type\": \"string\"\n  },\n  \"Schubladeninnenmaße Tiefe\": {\n    \"type\": \"string\"\n  },\n  \"Fachinnenmaße Breite\": {\n    \"type\": \"string\"\n  },\n  \"Fachinnenmaße Höhe\": {\n    \"type\": \"string\"\n  },\n  \"Fachinnenmaße Tiefe\": {\n    \"type\": \"string\"\n  },\n  \"EN Normen\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Schubkästen\": {\n    \"type\": \"string\"\n  },\n  \"Bezug abnehmbar\": {\n    \"type\": \"string\"\n  },\n  \"Bezug waschbar\": {\n    \"type\": \"string\"\n  },\n  \"Pflegehinweise Bezug Topper\": {\n    \"type\": \"string\"\n  },\n  \"Polsteraufbau\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Füße / Gestell\": {\n    \"type\": \"string\"\n  },\n  \"Herstellungsland\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Schubkästen 2\": {\n    \"type\": \"string\"\n  },\n  \"Abnehmbarer Bezug\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Auflage / Polster\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Böden\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Borde\": {\n    \"type\": \"string\"\n  },\n  \"Flaschenregal\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Lochreihen\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Einlegeböden\": {\n    \"type\": \"string\"\n  },\n  \"Material Einlegeböden\": {\n    \"type\": \"string\"\n  },\n  \"Rahmen\": {\n    \"type\": \"string\"\n  },\n  \"Art Lochreihe\": {\n    \"type\": \"string\"\n  },\n  \"Oberflächenoptik\": {\n    \"type\": \"string\"\n  },\n  \"Art Rahmen\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Bettkästen 2\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Belastungspunkte\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Lichter\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Matratzenkerne\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Motoren\": {\n    \"type\": \"string\"\n  },\n  \"Art Lattenrost\": {\n    \"type\": \"string\"\n  },\n  \"Art Verstellbarkeit Kopfteil\": {\n    \"type\": \"string\"\n  },\n  \"Art Verstellbarkeit Matratze\": {\n    \"type\": \"string\"\n  },\n  \"Art Verstellbarkeit Fußteil\": {\n    \"type\": \"string\"\n  },\n  \"Ausstattung Bett 2\": {\n    \"type\": \"string\"\n  },\n  \"Bettkastenmaß Breite 2\": {\n    \"type\": \"string\"\n  },\n  \"Bettkastenmaß Höhe 2\": {\n    \"type\": \"string\"\n  },\n  \"Bettkastenmaß Tiefe 2\": {\n    \"type\": \"string\"\n  },\n  \"Breite Bettseite\": {\n    \"type\": \"string\"\n  },\n  \"Breite Fußteil\": {\n    \"type\": \"string\"\n  },\n  \"Breite Kopfteil 2\": {\n    \"type\": \"string\"\n  },\n  \"Fernbedienung Bett\": {\n    \"type\": \"string\"\n  },\n  \"Funktion Bett\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Fußteil\": {\n    \"type\": \"string\"\n  },\n  \"Höhe Kopfteil 2\": {\n    \"type\": \"string\"\n  },\n  \"Lattenrost\": {\n    \"type\": \"string\"\n  },\n  \"Länge Fußteil\": {\n    \"type\": \"string\"\n  },\n  \"Liegehöhe maximal\": {\n    \"type\": \"string\"\n  },\n  \"Liegehöhe minimal\": {\n    \"type\": \"string\"\n  },\n  \"Material Fußteil\": {\n    \"type\": \"string\"\n  },\n  \"Material Kopfteil 2\": {\n    \"type\": \"string\"\n  },\n  \"Max. Belastbarkeit pro Bettseite\": {\n    \"type\": \"string\"\n  },\n  \"Verstellbarkeit Kopfteil\": {\n    \"type\": \"string\"\n  },\n  \"Verstellbarkeit Liegeposition\": {\n    \"type\": \"string\"\n  },\n  \"Verstellbarkeit Fußteil\": {\n    \"type\": \"string\"\n  },\n  \"Matratzenkern\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl textiler Elemente\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Textilien\": {\n    \"type\": \"string\"\n  },\n  \"Material Textilien\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Holzelemente\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Kunststoffelemente\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Metallelemente\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Materialarten\": {\n    \"type\": \"string\"\n  },\n  \"Aufteilung Materialgewicht in kg\": {\n    \"type\": \"string\"\n  },\n  \"Anteil Materialarten in Prozent\": {\n    \"type\": \"string\"\n  },\n  \"Anteil Rezyklat im Material in Prozent\": {\n    \"type\": \"string\"\n  },\n  \"Natürliche Hohlräume (Stoffe) in Prozent\": {\n    \"type\": \"string\"\n  },\n  \"Aufteilung Verpackungsgewicht in kg\": {\n    \"type\": \"string\"\n  },\n  \"Verpackung als Verkaufsverpackung oder Serviceverpackung\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Verpackungsteile\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Materialarten Verpackung\": {\n    \"type\": \"string\"\n  },\n  \"Anteil Materialarten Verpackung in Prozent\": {\n    \"type\": \"string\"\n  },\n  \"Gewicht Verpackungen\": {\n    \"type\": \"string\"\n  },\n  \"Masse in kg\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Nutzungszyklen des Hauptproduktes\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Nutzungszyklen des Verpackungsmaterials\": {\n    \"type\": \"string\"\n  },\n  \"Aussagekräftiger Produkttitel\": {\n    \"type\": \"string\"\n  },\n  \"Herstellerkontakt Mail\": {\n    \"type\": \"string\"\n  },\n  \"Herstellerkontakt Telefon\": {\n    \"type\": \"string\"\n  },\n  \"Herstellerkontakt URL\": {\n    \"type\": \"string\"\n  },\n  \"Herstellerkontakt postalische Anschrift\": {\n    \"type\": \"string\"\n  },\n  \"Zusätzliche Produktionsbilder\": {\n    \"type\": \"string\"\n  },\n  \"GPSR-Warnhinweis\": {\n    \"type\": \"string\"\n  },\n  \"Verantwortliche Person Deutschland Mail\": {\n    \"type\": \"string\"\n  },\n  \"Verantwortliche Person Deutschland Telefon\": {\n    \"type\": \"string\"\n  },\n  \"Verantwortliche Person Deutschland URL\": {\n    \"type\": \"string\"\n  },\n  \"Verantwortliche Person Deutschland postalische Anschrift\": {\n    \"type\": \"string\"\n  },\n  \"Verantwortliche Person Deutschland Name\": {\n    \"type\": \"string\"\n  },\n  \"OEKO-TEX® STANDARD 100 Schadstoffgeprüft im Lieferumfang\": {\n    \"type\": \"string\"\n  },\n  \"Abnehmbar\": {\n    \"type\": \"string\"\n  },\n  \"Wissenswertes Härtegrad\": {\n    \"type\": \"string\"\n  },\n  \"Beschreibung\": {\n    \"type\": \"string\"\n  },\n  \"Produktdetails\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Sitzkissen\": {\n    \"type\": \"string\"\n  },\n  \"Farbe Sitzkissen / Rückenlehne\": {\n    \"type\": \"string\"\n  },\n  \"Lieferumfang Textilien\": {\n    \"type\": \"string\"\n  },\n  \"Art Kopfteil\": {\n    \"type\": \"string\"\n  },\n  \"Anzahl Segmente\": {\n    \"type\": \"string\"\n  },\n  \"Art Verstellbarkeit Kopfstütze\": {\n    \"type\": \"string\"\n  },\n  \"Art Verstellbarkeit Armlehnen\": {\n    \"type\": \"string\"\n  },\n  \"Art Verstellbarkeit Rückenlehne\": {\n    \"type\": \"string\"\n  },\n  \"Art Verstellbarkeit Sitzfläche\": {\n    \"type\": \"string\"\n  },\n  \"Funktionen Rückenlehne\": {\n    \"type\": \"string\"\n  },\n  \"Funktionen Kopfstütze\": {\n    \"type\": \"string\"\n  },\n  \"Funktionen Sitzfläche\": {\n    \"type\": \"string\"\n  },\n  \"Füllmenge Liter (l)\": {\n    \"type\": \"string\"\n  },\n  \"Füllmenge Mililiter (ml)\": {\n    \"type\": \"string\"\n  },\n  \"Besonderheiten Körbe und Behälter\": {\n    \"type\": \"string\"\n  },\n  \"Physikalische Gefahren\": {\n    \"type\": \"string\"\n  },\n  \"Gesundheitsgefahren\": {\n    \"type\": \"string\"\n  },\n  \"Umweltgefahren\": {\n    \"type\": \"string\"\n  },\n  \"Allgemeines\": {\n    \"type\": \"string\"\n  },\n  \"Prävention\": {\n    \"type\": \"string\"\n  },\n  \"Reaktion\": {\n    \"type\": \"string\"\n  },\n  \"Aufbewahrung\": {\n    \"type\": \"string\"\n  },\n  \"Entsorgung\": {\n    \"type\": \"string\"\n  }\n}\n\nconst product_data = $input.first().json.product_data;\nconst understanding = $input.first().json.text;\n\nreturn { \n  columns: columns,\n  product_data: product_data,\n  understanding: understanding\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        352
+      ],
+      "id": "57dbaf89-9abe-4e0b-884c-3bee4b9ad016",
+      "name": "Add JSON Schema",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        752,
+        352
+      ],
+      "id": "05a296d4-cf93-4c88-a683-34dcd84f02f1",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "content": "Source Understanding deactivated as to not overload the Information Extraction with context",
+        "height": 80,
+        "width": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        464,
+        208
+      ],
+      "id": "b693f2b3-ca1d-4e29-b73b-591edc11de00",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Activate Slicing to only test on a part of the output columns",
+        "height": 80
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        256
+      ],
+      "id": "2352b925-0b15-487e-a5e7-bcec11e2baa2",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## To-Do\nImplement better PDF parsing",
+        "height": 80,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        144
+      ],
+      "id": "420e91c5-b7df-4b8a-8605-1e59557965e3",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from XLSX",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from XLS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extraction",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Source Understanding",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Parse PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from XLSX": {
+      "main": [
+        [
+          {
+            "node": "Parse XLSX / XLS / CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from XLS": {
+      "main": [
+        [
+          {
+            "node": "Parse XLSX / XLS / CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from CSV": {
+      "main": [
+        [
+          {
+            "node": "Parse XLSX / XLS / CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form for testing": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Information Extraction",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Error Handling",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse PDF": {
+      "main": [
+        [
+          {
+            "node": "Source Understanding",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse XLSX / XLS / CSV": {
+      "main": [
+        [
+          {
+            "node": "Source Understanding",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slice Batches for Testing": {
+      "main": [
+        [
+          {
+            "node": "Information Extraction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Batch Output Columns": {
+      "main": [
+        [
+          {
+            "node": "Slice Batches for Testing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Source Understanding": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Information Extraction": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add JSON Schema": {
+      "main": [
+        [
+          {
+            "node": "Batch Output Columns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Add JSON Schema",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "bfaf60fb-c8d2-4616-b4aa-5a5bd9cc419f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bad83ee829fa1c6f950c9ac7d3325e5b78e3f8ff6d7c2fdd0d76f091d46647d3"
+  },
+  "id": "mfUffyyNDg6Xco09",
+  "tags": []
+}
